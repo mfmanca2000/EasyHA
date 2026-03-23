@@ -221,8 +221,8 @@ export default function Dashboard() {
           💡 Lights
         </p>
         <div
-          className="flex-1 grid gap-2"
-          style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(82px, 1fr))', gridAutoRows: '1fr' }}
+          className="grid gap-2"
+          style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(82px, 1fr))', gridAutoRows: '80px' }}
         >
           {ENTITIES.lights.map((light) => {
             const ls = s(light.id);
@@ -231,35 +231,50 @@ export default function Dashboard() {
               <button
                 key={light.id}
                 onClick={() => toggleLight(light.id, ls?.state ?? 'off')}
-                className={`relative flex flex-col items-center justify-center gap-1 rounded-xl border transition-all duration-300 cursor-pointer p-2
+                className={`relative flex flex-col items-center justify-center gap-1.5 rounded-2xl border transition-all duration-300 cursor-pointer overflow-hidden
                   ${isOn
-                    ? 'bg-yellow-500/15 border-yellow-400/50 shadow-[0_0_16px_rgba(234,179,8,0.2),inset_0_1px_0_rgba(255,255,255,0.05)]'
-                    : 'bg-slate-800 border-slate-700 hover:border-slate-600'
+                    ? 'border-yellow-400/50 shadow-[0_0_18px_rgba(234,179,8,0.4),0_4px_12px_rgba(0,0,0,0.5)]'
+                    : 'border-slate-700/70 shadow-[0_2px_8px_rgba(0,0,0,0.4)] hover:border-slate-600 hover:shadow-[0_4px_12px_rgba(0,0,0,0.5)]'
                   }`}
+                style={{
+                  background: isOn
+                    ? 'radial-gradient(ellipse at 50% -10%, rgba(253,224,71,0.28) 0%, rgba(234,179,8,0.10) 50%, rgba(15,23,42,0.97) 100%)'
+                    : 'linear-gradient(160deg, rgba(30,41,59,0.95) 0%, rgba(15,23,42,1) 100%)',
+                }}
               >
+                {/* Glow orb behind icon */}
+                {isOn && (
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-3 w-14 h-14 rounded-full bg-yellow-300/30 blur-xl pointer-events-none" />
+                )}
+
                 {/* Bulb icon */}
-                <div className={`relative transition-all duration-300 ${isOn ? 'scale-110' : 'scale-100 opacity-30'}`}>
-                  <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none">
-                    {isOn && <circle cx="12" cy="10" r="7" fill="rgba(250,204,21,0.15)" />}
+                <div className={`relative z-10 transition-all duration-300 ${isOn ? 'scale-115 drop-shadow-[0_0_6px_rgba(253,224,71,0.9)]' : 'opacity-20'}`}>
+                  <svg viewBox="0 0 24 24" className="w-7 h-7" fill="none">
                     <path
                       d="M12 2C8.69 2 6 4.69 6 8c0 2.22 1.21 4.16 3 5.19V15a1 1 0 001 1h4a1 1 0 001-1v-1.81C16.79 12.16 18 10.22 18 8c0-3.31-2.69-6-6-6z"
-                      fill={isOn ? 'rgba(250,204,21,0.9)' : 'rgba(148,163,184,0.4)'}
+                      fill={isOn ? '#fde047' : 'rgba(148,163,184,0.6)'}
                     />
-                    <rect x="9" y="16" width="6" height="1.5" rx="0.5" fill={isOn ? 'rgba(180,140,10,0.9)' : 'rgba(100,116,139,0.5)'} />
-                    <rect x="9.5" y="18" width="5" height="1.5" rx="0.75" fill={isOn ? 'rgba(160,120,8,0.9)' : 'rgba(71,85,105,0.5)'} />
+                    <rect x="9" y="16" width="6" height="1.5" rx="0.5" fill={isOn ? '#ca8a04' : 'rgba(100,116,139,0.6)'} />
+                    <rect x="9.5" y="18" width="5" height="1.5" rx="0.75" fill={isOn ? '#a16207' : 'rgba(71,85,105,0.6)'} />
                     <path
                       d="M10.5 11.5 L12 9 L13.5 11.5"
-                      stroke={isOn ? 'rgba(255,255,255,0.6)' : 'rgba(148,163,184,0.2)'}
-                      strokeWidth="0.8" fill="none" strokeLinecap="round"
+                      stroke={isOn ? 'rgba(255,255,255,0.75)' : 'rgba(148,163,184,0.2)'}
+                      strokeWidth="0.9" fill="none" strokeLinecap="round"
                     />
                   </svg>
-                  {isOn && <div className="absolute inset-0 rounded-full bg-yellow-400/10 blur-md -z-10 scale-150" />}
                 </div>
 
                 {/* Name */}
-                <span className={`text-[10px] font-medium text-center leading-tight transition-colors duration-300 ${isOn ? 'text-yellow-100' : 'text-slate-500'}`}>
+                <span className={`relative z-10 text-[9px] font-semibold text-center leading-tight tracking-wide transition-colors duration-300 px-1
+                  ${isOn ? 'text-yellow-100' : 'text-slate-500'}`}>
                   {light.name}
                 </span>
+
+                {/* Bottom accent line */}
+                <div className={`absolute bottom-0 left-0 right-0 h-[2px] transition-opacity duration-300
+                  ${isOn ? 'opacity-100' : 'opacity-0'}`}
+                  style={{ background: 'linear-gradient(90deg, transparent, rgba(253,224,71,0.7), transparent)' }}
+                />
               </button>
             );
           })}
