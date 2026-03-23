@@ -18,6 +18,7 @@ export const ENTITIES = {
     tesla: 'sensor.electra_battery',
   },
   lights: [
+    { id: 'light.soggiorno_tavolo', name: 'Soggiorno Tavolo' },
     { id: 'light.soggiorno_divano', name: 'Soggiorno Divano' },
     { id: 'light.primo_piano_up', name: 'Primo Piano ↑' },
     { id: 'light.primo_piano_down', name: 'Primo Piano ↓' },
