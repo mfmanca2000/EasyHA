@@ -41,12 +41,24 @@ function fmtWithUnit(state: EntityState | null | undefined, decimals = 1): strin
   return u ? `${v} ${u}` : v;
 }
 
-// Battery bar colour
 function batteryColor(pct: number): string {
   if (pct > 50) return 'bg-green-500';
   if (pct > 20) return 'bg-yellow-500';
   return 'bg-red-500';
 }
+
+function batteryTextColor(pct: number): string {
+  if (pct > 50) return 'text-green-400';
+  if (pct > 20) return 'text-yellow-400';
+  return 'text-red-400';
+}
+
+// Panel-specific accent colours
+const PANEL_STYLES = [
+  { border: 'border-amber-500/30', label: 'text-amber-400', value: 'text-amber-200', bg: 'bg-amber-500/8', glow: '' },
+  { border: 'border-orange-500/30', label: 'text-orange-400', value: 'text-orange-200', bg: 'bg-orange-500/8', glow: '' },
+  { border: 'border-yellow-500/30', label: 'text-yellow-400', value: 'text-yellow-200', bg: 'bg-yellow-500/8', glow: '' },
+];
 
 export default function Dashboard() {
   const [states, setStates] = useState<StatesMap>({});
@@ -83,7 +95,6 @@ export default function Dashboard() {
   const toggleLight = async (entityId: string, currentState: string) => {
     if (pendingToggle.current.has(entityId)) return;
     const action = currentState === 'on' ? 'turn_off' : 'turn_on';
-    // Optimistic update
     pendingToggle.current.add(entityId);
     setStates((prev) => ({
       ...prev,
@@ -118,124 +129,172 @@ export default function Dashboard() {
 
   return (
     <div className="h-screen bg-slate-900 text-white flex flex-col p-3 gap-3 overflow-hidden select-none">
+
       {/* ── Header ── */}
       <div className="flex items-center justify-between flex-shrink-0">
         <h1 className="text-lg font-bold tracking-wide text-amber-400">⚡ EasyHA</h1>
-        <div className="flex items-center gap-3 text-xs text-slate-400">
-          {error && <span className="text-red-400">⚠ {error}</span>}
-          <span>Updated {lastUpdate}</span>
+
+        {/* Quick stats in header */}
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-1.5 text-xs">
+            <span className="text-slate-500">☀ Today</span>
+            <span className="font-mono font-semibold text-green-300">{fmtWithUnit(s(ENTITIES.solar.energyToday), 2)}</span>
+          </div>
+          {error && <span className="text-red-400 text-xs">⚠ {error}</span>}
+          <span className="text-xs text-slate-500">{lastUpdate}</span>
           <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
         </div>
       </div>
 
-      {/* ── Main 3-column grid ── */}
-      <div className="flex-1 grid grid-cols-3 gap-3 min-h-0">
-
-        {/* ── Column 1: Solar + Grid ── */}
-        <div className="flex flex-col gap-3 min-h-0">
-
-          {/* Solar panels */}
-          <div className="bg-slate-800 rounded-2xl p-3 border border-amber-500/25 flex-shrink-0">
-            <p className="text-xs font-semibold text-amber-400 uppercase tracking-widest mb-2">☀ Solar — Now</p>
-            <div className="grid grid-cols-2 gap-x-2 gap-y-2">
-              {ENTITIES.solar.panels.map((panel) => (
-                <div key={panel.id}>
-                  <p className="text-xs text-slate-400">{panel.name}</p>
-                  <p className="text-sm font-mono font-semibold">{fmtWithUnit(s(panel.id))}</p>
-                </div>
-              ))}
-              <div className="col-span-2 border-t border-slate-700 pt-2">
-                <p className="text-xs text-amber-300/70">Total</p>
-                <p className="text-sm font-mono font-bold text-amber-300">{fmtWithUnit(s(ENTITIES.solar.totalPower))}</p>
+      {/* ── Row 1: Solar panels ── */}
+      <div className="flex-shrink-0 grid grid-cols-3 gap-2">
+        {ENTITIES.solar.panels.map((panel, i) => {
+          const ps = PANEL_STYLES[i] ?? PANEL_STYLES[0];
+          const val = s(panel.id);
+          const watts = val ? parseFloat(val.state) || 0 : 0;
+          return (
+            <div key={panel.id} className={`${ps.bg} rounded-xl p-2.5 border ${ps.border}`}>
+              <p className={`text-[10px] font-semibold uppercase tracking-widest mb-1.5 ${ps.label}`}>
+                ☀ {panel.name}
+              </p>
+              <p className={`text-lg font-bold font-mono leading-none ${ps.value}`}>
+                {fmtWithUnit(val)}
+              </p>
+              <div className="mt-1.5 h-1 bg-slate-700 rounded-full overflow-hidden">
+                <div
+                  className={`h-full rounded-full transition-all duration-500 ${i === 0 ? 'bg-amber-400' : i === 1 ? 'bg-orange-400' : 'bg-yellow-400'}`}
+                  style={{ width: `${Math.min(100, (watts / 1000) * 100)}%` }}
+                />
               </div>
             </div>
-          </div>
+          );
+        })}
+      </div>
 
-          {/* Solar energy today */}
-          <div className="bg-slate-800 rounded-2xl p-3 border border-green-500/25 flex-shrink-0">
-            <p className="text-xs font-semibold text-green-400 uppercase tracking-widest mb-1">📅 Energy Today</p>
-            <p className="text-2xl font-bold text-green-300 leading-none whitespace-nowrap">
-              {fmtWithUnit(s(ENTITIES.solar.energyToday), 2)}
-            </p>
-          </div>
-
-          {/* Grid power */}
-          <div className="bg-slate-800 rounded-2xl p-3 border border-blue-500/25 flex-shrink-0">
-            <p className="text-xs font-semibold text-blue-400 uppercase tracking-widest mb-2">🔌 Grid</p>
-            <div className="grid grid-cols-2 gap-x-2 gap-y-2">
-              <div>
-                <p className="text-xs text-slate-400">↓ Import</p>
-                <p className="text-sm font-mono font-semibold text-red-400">{fmtWithUnit(s(ENTITIES.grid.importPower))}</p>
-              </div>
-              <div>
-                <p className="text-xs text-slate-400">↑ Export</p>
-                <p className="text-sm font-mono font-semibold text-green-400">{fmtWithUnit(s(ENTITIES.grid.exportPower))}</p>
-              </div>
-              {(ENTITIES.grid.importEnergy || ENTITIES.grid.exportEnergy) && (
-                <>
-                  {ENTITIES.grid.importEnergy && (
-                    <div className="col-span-1 border-t border-slate-700 pt-2">
-                      <p className="text-xs text-slate-400">↓ Energy In</p>
-                      <p className="text-sm font-mono">{fmtWithUnit(s(ENTITIES.grid.importEnergy))}</p>
-                    </div>
-                  )}
-                  {ENTITIES.grid.exportEnergy && (
-                    <div className="col-span-1 border-t border-slate-700 pt-2">
-                      <p className="text-xs text-slate-400">↑ Energy Out</p>
-                      <p className="text-sm font-mono">{fmtWithUnit(s(ENTITIES.grid.exportEnergy))}</p>
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
-          </div>
-
-          {/* Tesla battery */}
-          <div className="bg-slate-800 rounded-2xl p-3 border border-red-500/25 flex-shrink-0">
-            <p className="text-xs font-semibold text-red-400 uppercase tracking-widest mb-1">🚗 Tesla Battery</p>
-            <p className="text-3xl font-bold leading-none">
-              {teslaState ? `${teslaPct}%` : '—'}
-            </p>
-            <div className="mt-2 h-2 bg-slate-700 rounded-full overflow-hidden">
-              <div
-                className={`h-full rounded-full transition-all duration-500 ${batteryColor(teslaPct)}`}
-                style={{ width: `${teslaPct}%` }}
-              />
-            </div>
+      {/* ── Row 2: Grid ── */}
+      <div className="flex-shrink-0 grid grid-cols-3 gap-2">
+        {/* Import Power */}
+        <div className="bg-red-500/8 rounded-xl p-2.5 border border-red-500/25">
+          <p className="text-[10px] font-semibold uppercase tracking-widest mb-1.5 text-red-400">↓ Import</p>
+          <p className="text-lg font-bold font-mono leading-none text-red-200">
+            {fmtWithUnit(s(ENTITIES.grid.importPower))}
+          </p>
+          <div className="mt-1.5 h-1 bg-slate-700 rounded-full overflow-hidden">
+            <div
+              className="h-full rounded-full bg-red-400 transition-all duration-500"
+              style={{ width: `${Math.min(100, ((s(ENTITIES.grid.importPower) ? parseFloat(s(ENTITIES.grid.importPower)!.state) || 0 : 0) / 3000) * 100)}%` }}
+            />
           </div>
         </div>
 
-        {/* ── Columns 2–3: Lights ── */}
-        <div className="col-span-2 bg-slate-800 rounded-2xl p-3 border border-yellow-500/25 flex flex-col min-h-0">
-          <p className="text-xs font-semibold text-yellow-400 uppercase tracking-widest mb-3 flex-shrink-0">
-            💡 Lights
+        {/* Export Power */}
+        <div className="bg-green-500/8 rounded-xl p-2.5 border border-green-500/25">
+          <p className="text-[10px] font-semibold uppercase tracking-widest mb-1.5 text-green-400">↑ Export</p>
+          <p className="text-lg font-bold font-mono leading-none text-green-200">
+            {fmtWithUnit(s(ENTITIES.grid.exportPower))}
           </p>
-          <div className="flex-1 grid grid-cols-2 gap-2 content-start">
-            {ENTITIES.lights.map((light) => {
-              const ls = s(light.id);
-              const isOn = ls?.state === 'on';
-              return (
-                <button
-                  key={light.id}
-                  onClick={() => toggleLight(light.id, ls?.state ?? 'off')}
-                  className={`flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer
-                    ${isOn
-                      ? 'bg-yellow-500/20 border border-yellow-400/50 text-yellow-200 shadow-[0_0_12px_rgba(234,179,8,0.15)]'
-                      : 'bg-slate-700/60 border border-slate-600 text-slate-400 hover:border-slate-500 hover:text-slate-300'
-                    }`}
-                >
-                  <span>{light.name}</span>
-                  <span
-                    className={`w-2.5 h-2.5 rounded-full flex-shrink-0 transition-all ${
-                      isOn ? 'bg-yellow-400 shadow-[0_0_6px_rgba(250,204,21,0.8)]' : 'bg-slate-600'
-                    }`}
-                  />
-                </button>
-              );
-            })}
+          <div className="mt-1.5 h-1 bg-slate-700 rounded-full overflow-hidden">
+            <div
+              className="h-full rounded-full bg-green-400 transition-all duration-500"
+              style={{ width: `${Math.min(100, ((s(ENTITIES.grid.exportPower) ? parseFloat(s(ENTITIES.grid.exportPower)!.state) || 0 : 0) / 3000) * 100)}%` }}
+            />
           </div>
+        </div>
+
+        {/* Energy In today */}
+        {ENTITIES.grid.importEnergy ? (
+          <div className="bg-blue-500/8 rounded-xl p-2.5 border border-blue-500/25">
+            <p className="text-[10px] font-semibold uppercase tracking-widest mb-1.5 text-blue-400">↓ Energy In</p>
+            <p className="text-lg font-bold font-mono leading-none text-blue-200">
+              {fmtWithUnit(s(ENTITIES.grid.importEnergy), 2)}
+            </p>
+            <div className="mt-1.5 h-1 bg-slate-700 rounded-full" />
+          </div>
+        ) : (
+          <div className="bg-slate-800/50 rounded-xl p-2.5 border border-slate-700/30" />
+        )}
+      </div>
+
+      {/* ── Lights grid ── */}
+      <div className="flex-1 min-h-0 flex flex-col">
+        <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest mb-1.5 flex-shrink-0">
+          💡 Lights
+        </p>
+        <div
+          className="grid gap-2"
+          style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(82px, 1fr))', gridAutoRows: '80px' }}
+        >
+          {ENTITIES.lights.map((light) => {
+            const ls = s(light.id);
+            const isOn = ls?.state === 'on';
+            return (
+              <button
+                key={light.id}
+                onClick={() => toggleLight(light.id, ls?.state ?? 'off')}
+                className={`relative flex flex-col items-center justify-center gap-1.5 rounded-2xl border transition-all duration-300 cursor-pointer overflow-hidden
+                  ${isOn
+                    ? 'border-yellow-400/50 shadow-[0_0_18px_rgba(234,179,8,0.4),0_4px_12px_rgba(0,0,0,0.5)]'
+                    : 'border-slate-700/70 shadow-[0_2px_8px_rgba(0,0,0,0.4)] hover:border-slate-600 hover:shadow-[0_4px_12px_rgba(0,0,0,0.5)]'
+                  }`}
+                style={{
+                  background: isOn
+                    ? 'radial-gradient(ellipse at 50% -10%, rgba(253,224,71,0.28) 0%, rgba(234,179,8,0.10) 50%, rgba(15,23,42,0.97) 100%)'
+                    : 'linear-gradient(160deg, rgba(30,41,59,0.95) 0%, rgba(15,23,42,1) 100%)',
+                }}
+              >
+                {/* Glow orb behind icon */}
+                {isOn && (
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-3 w-14 h-14 rounded-full bg-yellow-300/30 blur-xl pointer-events-none" />
+                )}
+
+                {/* Bulb icon */}
+                <div className={`relative z-10 transition-all duration-300 ${isOn ? 'scale-115 drop-shadow-[0_0_6px_rgba(253,224,71,0.9)]' : 'opacity-20'}`}>
+                  <svg viewBox="0 0 24 24" className="w-7 h-7" fill="none">
+                    <path
+                      d="M12 2C8.69 2 6 4.69 6 8c0 2.22 1.21 4.16 3 5.19V15a1 1 0 001 1h4a1 1 0 001-1v-1.81C16.79 12.16 18 10.22 18 8c0-3.31-2.69-6-6-6z"
+                      fill={isOn ? '#fde047' : 'rgba(148,163,184,0.6)'}
+                    />
+                    <rect x="9" y="16" width="6" height="1.5" rx="0.5" fill={isOn ? '#ca8a04' : 'rgba(100,116,139,0.6)'} />
+                    <rect x="9.5" y="18" width="5" height="1.5" rx="0.75" fill={isOn ? '#a16207' : 'rgba(71,85,105,0.6)'} />
+                    <path
+                      d="M10.5 11.5 L12 9 L13.5 11.5"
+                      stroke={isOn ? 'rgba(255,255,255,0.75)' : 'rgba(148,163,184,0.2)'}
+                      strokeWidth="0.9" fill="none" strokeLinecap="round"
+                    />
+                  </svg>
+                </div>
+
+                {/* Name */}
+                <span className={`relative z-10 text-[9px] font-semibold text-center leading-tight tracking-wide transition-colors duration-300 px-1
+                  ${isOn ? 'text-yellow-100' : 'text-slate-500'}`}>
+                  {light.name}
+                </span>
+
+                {/* Bottom accent line */}
+                <div className={`absolute bottom-0 left-0 right-0 h-[2px] transition-opacity duration-300
+                  ${isOn ? 'opacity-100' : 'opacity-0'}`}
+                  style={{ background: 'linear-gradient(90deg, transparent, rgba(253,224,71,0.7), transparent)' }}
+                />
+              </button>
+            );
+          })}
         </div>
       </div>
+
+      {/* ── Tesla battery ── */}
+      <div className="flex-shrink-0 bg-slate-800 rounded-xl px-4 py-2.5 border border-red-500/20 flex items-center gap-3">
+        <span className="text-[10px] font-semibold uppercase tracking-widest text-red-400 whitespace-nowrap">🚗 Tesla</span>
+        <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
+          <div
+            className={`h-full rounded-full transition-all duration-500 ${batteryColor(teslaPct)}`}
+            style={{ width: `${teslaPct}%` }}
+          />
+        </div>
+        <span className={`text-sm font-bold font-mono tabular-nums w-10 text-right ${batteryTextColor(teslaPct)}`}>
+          {teslaState ? `${teslaPct}%` : '—'}
+        </span>
+      </div>
+
     </div>
   );
 }
