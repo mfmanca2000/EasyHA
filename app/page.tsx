@@ -140,15 +140,6 @@ export default function Dashboard() {
             <span className="text-slate-500">☀ Today</span>
             <span className="font-mono font-semibold text-green-300">{fmtWithUnit(s(ENTITIES.solar.energyToday), 2)}</span>
           </div>
-          <div className="flex items-center gap-1.5 text-xs">
-            <span className="text-slate-500">🚗</span>
-            <span className={`font-mono font-semibold ${batteryTextColor(teslaPct)}`}>
-              {teslaState ? `${teslaPct}%` : '—'}
-            </span>
-            <div className="w-12 h-1.5 bg-slate-700 rounded-full overflow-hidden">
-              <div className={`h-full rounded-full transition-all duration-500 ${batteryColor(teslaPct)}`} style={{ width: `${teslaPct}%` }} />
-            </div>
-          </div>
           {error && <span className="text-red-400 text-xs">⚠ {error}</span>}
           <span className="text-xs text-slate-500">{lastUpdate}</span>
           <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
@@ -156,21 +147,20 @@ export default function Dashboard() {
       </div>
 
       {/* ── Row 1: Solar panels ── */}
-      <div className="flex-shrink-0 grid grid-cols-3 gap-3">
+      <div className="flex-shrink-0 grid grid-cols-3 gap-2">
         {ENTITIES.solar.panels.map((panel, i) => {
           const ps = PANEL_STYLES[i] ?? PANEL_STYLES[0];
           const val = s(panel.id);
           const watts = val ? parseFloat(val.state) || 0 : 0;
           return (
-            <div key={panel.id} className={`${ps.bg} rounded-2xl p-4 border ${ps.border}`}>
-              <p className={`text-xs font-semibold uppercase tracking-widest mb-3 ${ps.label}`}>
+            <div key={panel.id} className={`${ps.bg} rounded-xl p-2.5 border ${ps.border}`}>
+              <p className={`text-[10px] font-semibold uppercase tracking-widest mb-1.5 ${ps.label}`}>
                 ☀ {panel.name}
               </p>
-              <p className={`text-2xl font-bold font-mono leading-none ${ps.value}`}>
+              <p className={`text-lg font-bold font-mono leading-none ${ps.value}`}>
                 {fmtWithUnit(val)}
               </p>
-              {/* Mini sparkle bar proportional to 1000 W max */}
-              <div className="mt-3 h-1 bg-slate-700 rounded-full overflow-hidden">
+              <div className="mt-1.5 h-1 bg-slate-700 rounded-full overflow-hidden">
                 <div
                   className={`h-full rounded-full transition-all duration-500 ${i === 0 ? 'bg-amber-400' : i === 1 ? 'bg-orange-400' : 'bg-yellow-400'}`}
                   style={{ width: `${Math.min(100, (watts / 1000) * 100)}%` }}
@@ -182,14 +172,14 @@ export default function Dashboard() {
       </div>
 
       {/* ── Row 2: Grid ── */}
-      <div className="flex-shrink-0 grid grid-cols-3 gap-3">
+      <div className="flex-shrink-0 grid grid-cols-3 gap-2">
         {/* Import Power */}
-        <div className="bg-red-500/8 rounded-2xl p-4 border border-red-500/25">
-          <p className="text-xs font-semibold uppercase tracking-widest mb-3 text-red-400">↓ Import</p>
-          <p className="text-2xl font-bold font-mono leading-none text-red-200">
+        <div className="bg-red-500/8 rounded-xl p-2.5 border border-red-500/25">
+          <p className="text-[10px] font-semibold uppercase tracking-widest mb-1.5 text-red-400">↓ Import</p>
+          <p className="text-lg font-bold font-mono leading-none text-red-200">
             {fmtWithUnit(s(ENTITIES.grid.importPower))}
           </p>
-          <div className="mt-3 h-1 bg-slate-700 rounded-full overflow-hidden">
+          <div className="mt-1.5 h-1 bg-slate-700 rounded-full overflow-hidden">
             <div
               className="h-full rounded-full bg-red-400 transition-all duration-500"
               style={{ width: `${Math.min(100, ((s(ENTITIES.grid.importPower) ? parseFloat(s(ENTITIES.grid.importPower)!.state) || 0 : 0) / 3000) * 100)}%` }}
@@ -198,12 +188,12 @@ export default function Dashboard() {
         </div>
 
         {/* Export Power */}
-        <div className="bg-green-500/8 rounded-2xl p-4 border border-green-500/25">
-          <p className="text-xs font-semibold uppercase tracking-widest mb-3 text-green-400">↑ Export</p>
-          <p className="text-2xl font-bold font-mono leading-none text-green-200">
+        <div className="bg-green-500/8 rounded-xl p-2.5 border border-green-500/25">
+          <p className="text-[10px] font-semibold uppercase tracking-widest mb-1.5 text-green-400">↑ Export</p>
+          <p className="text-lg font-bold font-mono leading-none text-green-200">
             {fmtWithUnit(s(ENTITIES.grid.exportPower))}
           </p>
-          <div className="mt-3 h-1 bg-slate-700 rounded-full overflow-hidden">
+          <div className="mt-1.5 h-1 bg-slate-700 rounded-full overflow-hidden">
             <div
               className="h-full rounded-full bg-green-400 transition-all duration-500"
               style={{ width: `${Math.min(100, ((s(ENTITIES.grid.exportPower) ? parseFloat(s(ENTITIES.grid.exportPower)!.state) || 0 : 0) / 3000) * 100)}%` }}
@@ -213,26 +203,26 @@ export default function Dashboard() {
 
         {/* Energy In today */}
         {ENTITIES.grid.importEnergy ? (
-          <div className="bg-blue-500/8 rounded-2xl p-4 border border-blue-500/25">
-            <p className="text-xs font-semibold uppercase tracking-widest mb-3 text-blue-400">↓ Energy In</p>
-            <p className="text-2xl font-bold font-mono leading-none text-blue-200">
+          <div className="bg-blue-500/8 rounded-xl p-2.5 border border-blue-500/25">
+            <p className="text-[10px] font-semibold uppercase tracking-widest mb-1.5 text-blue-400">↓ Energy In</p>
+            <p className="text-lg font-bold font-mono leading-none text-blue-200">
               {fmtWithUnit(s(ENTITIES.grid.importEnergy), 2)}
             </p>
-            <div className="mt-3 h-1 bg-slate-700 rounded-full" />
+            <div className="mt-1.5 h-1 bg-slate-700 rounded-full" />
           </div>
         ) : (
-          <div className="bg-slate-800/50 rounded-2xl p-4 border border-slate-700/30" />
+          <div className="bg-slate-800/50 rounded-xl p-2.5 border border-slate-700/30" />
         )}
       </div>
 
       {/* ── Lights grid ── */}
       <div className="flex-1 min-h-0 flex flex-col">
-        <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2 flex-shrink-0">
+        <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest mb-1.5 flex-shrink-0">
           💡 Lights
         </p>
         <div
-          className="flex-1 grid gap-3"
-          style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gridAutoRows: '1fr' }}
+          className="flex-1 grid gap-2"
+          style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(82px, 1fr))', gridAutoRows: '1fr' }}
         >
           {ENTITIES.lights.map((light) => {
             const ls = s(light.id);
@@ -241,56 +231,53 @@ export default function Dashboard() {
               <button
                 key={light.id}
                 onClick={() => toggleLight(light.id, ls?.state ?? 'off')}
-                className={`relative flex flex-col items-center justify-center gap-2 rounded-2xl border transition-all duration-300 cursor-pointer p-3
+                className={`relative flex flex-col items-center justify-center gap-1 rounded-xl border transition-all duration-300 cursor-pointer p-2
                   ${isOn
-                    ? 'bg-yellow-500/15 border-yellow-400/50 shadow-[0_0_24px_rgba(234,179,8,0.2),inset_0_1px_0_rgba(255,255,255,0.05)]'
-                    : 'bg-slate-800 border-slate-700 hover:border-slate-600 hover:bg-slate-750'
+                    ? 'bg-yellow-500/15 border-yellow-400/50 shadow-[0_0_16px_rgba(234,179,8,0.2),inset_0_1px_0_rgba(255,255,255,0.05)]'
+                    : 'bg-slate-800 border-slate-700 hover:border-slate-600'
                   }`}
               >
                 {/* Bulb icon */}
                 <div className={`relative transition-all duration-300 ${isOn ? 'scale-110' : 'scale-100 opacity-30'}`}>
-                  <svg viewBox="0 0 24 24" className="w-8 h-8" fill="none">
-                    {/* Glow behind bulb when on */}
-                    {isOn && (
-                      <circle cx="12" cy="10" r="7" fill="rgba(250,204,21,0.15)" />
-                    )}
-                    {/* Bulb glass */}
+                  <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none">
+                    {isOn && <circle cx="12" cy="10" r="7" fill="rgba(250,204,21,0.15)" />}
                     <path
                       d="M12 2C8.69 2 6 4.69 6 8c0 2.22 1.21 4.16 3 5.19V15a1 1 0 001 1h4a1 1 0 001-1v-1.81C16.79 12.16 18 10.22 18 8c0-3.31-2.69-6-6-6z"
                       fill={isOn ? 'rgba(250,204,21,0.9)' : 'rgba(148,163,184,0.4)'}
                     />
-                    {/* Base */}
                     <rect x="9" y="16" width="6" height="1.5" rx="0.5" fill={isOn ? 'rgba(180,140,10,0.9)' : 'rgba(100,116,139,0.5)'} />
                     <rect x="9.5" y="18" width="5" height="1.5" rx="0.75" fill={isOn ? 'rgba(160,120,8,0.9)' : 'rgba(71,85,105,0.5)'} />
-                    {/* Filament lines */}
                     <path
                       d="M10.5 11.5 L12 9 L13.5 11.5"
                       stroke={isOn ? 'rgba(255,255,255,0.6)' : 'rgba(148,163,184,0.2)'}
-                      strokeWidth="0.8"
-                      fill="none"
-                      strokeLinecap="round"
+                      strokeWidth="0.8" fill="none" strokeLinecap="round"
                     />
                   </svg>
-                  {/* Outer glow ring */}
-                  {isOn && (
-                    <div className="absolute inset-0 rounded-full bg-yellow-400/10 blur-md -z-10 scale-150" />
-                  )}
+                  {isOn && <div className="absolute inset-0 rounded-full bg-yellow-400/10 blur-md -z-10 scale-150" />}
                 </div>
 
                 {/* Name */}
-                <span className={`text-xs font-medium text-center leading-tight transition-colors duration-300 ${isOn ? 'text-yellow-100' : 'text-slate-500'}`}>
+                <span className={`text-[10px] font-medium text-center leading-tight transition-colors duration-300 ${isOn ? 'text-yellow-100' : 'text-slate-500'}`}>
                   {light.name}
-                </span>
-
-                {/* ON/OFF pill */}
-                <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full transition-all duration-300
-                  ${isOn ? 'bg-yellow-400/20 text-yellow-300' : 'bg-slate-700 text-slate-600'}`}>
-                  {isOn ? 'ON' : 'OFF'}
                 </span>
               </button>
             );
           })}
         </div>
+      </div>
+
+      {/* ── Tesla battery ── */}
+      <div className="flex-shrink-0 bg-slate-800 rounded-xl px-4 py-2.5 border border-red-500/20 flex items-center gap-3">
+        <span className="text-[10px] font-semibold uppercase tracking-widest text-red-400 whitespace-nowrap">🚗 Tesla</span>
+        <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
+          <div
+            className={`h-full rounded-full transition-all duration-500 ${batteryColor(teslaPct)}`}
+            style={{ width: `${teslaPct}%` }}
+          />
+        </div>
+        <span className={`text-sm font-bold font-mono tabular-nums w-10 text-right ${batteryTextColor(teslaPct)}`}>
+          {teslaState ? `${teslaPct}%` : '—'}
+        </span>
       </div>
 
     </div>
