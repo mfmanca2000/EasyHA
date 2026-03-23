@@ -140,6 +140,8 @@ export default function Dashboard() {
 
   const teslaState = s(ENTITIES.battery.tesla);
   const teslaPct = teslaState ? Math.max(0, Math.min(100, parseFloat(teslaState.state) || 0)) : 0;
+  const teslaRangeState = s(ENTITIES.battery.teslaRange);
+  const teslaRange = teslaRangeState ? `${teslaRangeState.state}${teslaRangeState.attributes?.unit_of_measurement ? ' ' + teslaRangeState.attributes.unit_of_measurement : ''}` : null;
 
   return (
     <div className="min-h-screen bg-slate-900 text-white flex flex-col p-3 gap-3 overflow-y-auto select-none">
@@ -373,7 +375,7 @@ export default function Dashboard() {
                 {/* Status + cell labels */}
                 <div className="flex items-center justify-between px-0.5">
                   <span className={`text-[9px] font-bold uppercase tracking-widest ${acc.dim}`}>
-                    {batteryStatus(teslaPct)}
+                    {teslaRange ?? batteryStatus(teslaPct)}
                   </span>
                   <div className="flex gap-3">
                     {['25%', '50%', '75%'].map((t) => (
