@@ -11,8 +11,7 @@ export const ENTITIES = {
   grid: {
     importPower: 'sensor.power_import',
     exportPower: 'sensor.power_export',
-    // Add entity IDs below when available, e.g. 'sensor.energy_import_today'
-    importEnergy: null as string | null,
+    importEnergy: 'sensor.energy_import_daily' as string | null,
     exportEnergy: null as string | null,
   },
   battery: {
