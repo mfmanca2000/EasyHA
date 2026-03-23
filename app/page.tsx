@@ -53,6 +53,20 @@ function batteryTextColor(pct: number): string {
   return 'text-red-400';
 }
 
+function batteryAccent(pct: number) {
+  if (pct > 50) return { border: 'border-green-500/30', label: 'text-green-400', dim: 'text-green-600', glow: 'rgba(34,197,94,', bg: 'rgba(16,30,20,1)', cellGlow: 'rgba(34,197,94,0.5)' };
+  if (pct > 20) return { border: 'border-yellow-500/30', label: 'text-yellow-400', dim: 'text-yellow-600', glow: 'rgba(234,179,8,', bg: 'rgba(30,25,10,1)', cellGlow: 'rgba(234,179,8,0.5)' };
+  return { border: 'border-red-500/30', label: 'text-red-400', dim: 'text-red-600', glow: 'rgba(239,68,68,', bg: 'rgba(30,10,10,1)', cellGlow: 'rgba(239,68,68,0.5)' };
+}
+
+function batteryStatus(pct: number): string {
+  if (pct > 80) return 'Fully Charged';
+  if (pct > 50) return 'Good Range';
+  if (pct > 20) return 'Moderate';
+  if (pct > 10) return 'Low Battery';
+  return 'Critical!';
+}
+
 // Panel-specific accent colours
 const PANEL_STYLES = [
   { border: 'border-amber-500/30', label: 'text-amber-400', value: 'text-amber-200', bg: 'bg-amber-500/8', glow: '' },
@@ -281,19 +295,113 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* ── Tesla battery ── */}
-      <div className="flex-shrink-0 bg-slate-800 rounded-xl px-4 py-2.5 border border-red-500/20 flex items-center gap-3">
-        <span className="text-[10px] font-semibold uppercase tracking-widest text-red-400 whitespace-nowrap">🚗 Tesla</span>
-        <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
+      {/* ── Tesla Battery Row ── */}
+      {(() => {
+        const acc = batteryAccent(teslaPct);
+        return (
           <div
-            className={`h-full rounded-full transition-all duration-500 ${batteryColor(teslaPct)}`}
-            style={{ width: `${teslaPct}%` }}
-          />
-        </div>
-        <span className={`text-sm font-bold font-mono tabular-nums w-10 text-right ${batteryTextColor(teslaPct)}`}>
-          {teslaState ? `${teslaPct}%` : '—'}
-        </span>
-      </div>
+            className={`flex-shrink-0 relative overflow-hidden rounded-2xl border ${acc.border}`}
+            style={{
+              background: `linear-gradient(135deg, ${acc.bg} 0%, rgba(15,23,42,1) 100%)`,
+              boxShadow: `0 0 32px ${acc.glow}0.12), inset 0 1px 0 rgba(255,255,255,0.04)`,
+            }}
+          >
+            {/* Ambient radial glow */}
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={{ background: `radial-gradient(ellipse at 15% 50%, ${acc.glow}0.1) 0%, transparent 65%)` }}
+            />
+
+            <div className="relative flex items-center gap-4 px-4 py-3">
+
+              {/* Left: Tesla icon + label */}
+              <div className="flex flex-col items-center gap-1 flex-shrink-0 w-10">
+                <svg viewBox="0 0 24 24" className="w-7 h-7" fill="none">
+                  {/* Stylised car silhouette */}
+                  <path
+                    d="M3 14h18M5 14l1.5-4h11L19 14M5 14v2.5a.5.5 0 00.5.5H7a.5.5 0 00.5-.5V16h9v.5a.5.5 0 00.5.5h1.5a.5.5 0 00.5-.5V14"
+                    stroke={`${acc.glow}0.9)`}
+                    strokeWidth="1.4"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  {/* Wheels */}
+                  <circle cx="7.5" cy="17" r="1.3" fill={`${acc.glow}0.7)`} />
+                  <circle cx="16.5" cy="17" r="1.3" fill={`${acc.glow}0.7)`} />
+                  {/* Windshield hint */}
+                  <path d="M8 10l1-3h6l1 3" stroke={`${acc.glow}0.5)`} strokeWidth="1" strokeLinecap="round" />
+                </svg>
+                <span className={`text-[8px] font-black uppercase tracking-widest ${acc.label}`}>Tesla</span>
+              </div>
+
+              {/* Center: battery shape + status */}
+              <div className="flex-1 flex flex-col gap-1.5">
+
+                {/* Battery shape */}
+                <div className="relative flex items-center h-7">
+                  {/* Outer shell */}
+                  <div className="flex-1 relative h-full rounded-lg border border-slate-600/50 overflow-hidden bg-slate-900/60">
+                    {/* Glowing fill */}
+                    <div
+                      className={`absolute left-0 top-0 bottom-0 ${batteryColor(teslaPct)} transition-all duration-1000 ease-out`}
+                      style={{
+                        width: `${teslaPct}%`,
+                        boxShadow: `inset 0 1px 0 rgba(255,255,255,0.25), 0 0 10px ${acc.cellGlow}`,
+                      }}
+                    />
+                    {/* Shine overlay on fill */}
+                    <div
+                      className="absolute left-0 top-0 h-1/2 pointer-events-none transition-all duration-1000"
+                      style={{
+                        width: `${teslaPct}%`,
+                        background: 'linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 100%)',
+                      }}
+                    />
+                    {/* Cell dividers */}
+                    {[25, 50, 75].map((pos) => (
+                      <div
+                        key={pos}
+                        className="absolute top-1 bottom-1 w-px bg-slate-900/70 z-10"
+                        style={{ left: `${pos}%` }}
+                      />
+                    ))}
+                  </div>
+                  {/* Battery terminal nub */}
+                  <div className="w-1.5 h-3.5 rounded-r-sm flex-shrink-0 border border-slate-600/50 bg-slate-700/60 -ml-px" />
+                </div>
+
+                {/* Status + cell labels */}
+                <div className="flex items-center justify-between px-0.5">
+                  <span className={`text-[9px] font-bold uppercase tracking-widest ${acc.dim}`}>
+                    {batteryStatus(teslaPct)}
+                  </span>
+                  <div className="flex gap-3">
+                    {['25%', '50%', '75%'].map((t) => (
+                      <span key={t} className="text-[8px] text-slate-600 font-mono">{t}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Right: big percentage */}
+              <div className="flex-shrink-0 flex flex-col items-end justify-center min-w-[3.5rem]">
+                <div className="flex items-end leading-none gap-0.5">
+                  <span
+                    className={`text-3xl font-black font-mono tabular-nums ${batteryTextColor(teslaPct)}`}
+                    style={{ textShadow: `0 0 24px ${acc.glow}0.6)` }}
+                  >
+                    {teslaState ? teslaPct : '—'}
+                  </span>
+                  {teslaState && (
+                    <span className={`text-sm font-bold mb-0.5 ${acc.dim}`}>%</span>
+                  )}
+                </div>
+              </div>
+
+            </div>
+          </div>
+        );
+      })()}
 
     </div>
   );
