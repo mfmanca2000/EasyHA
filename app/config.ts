@@ -16,6 +16,7 @@ export const ENTITIES = {
   },
   battery: {
     tesla: 'sensor.electra_battery',
+    teslaRange: 'sensor.electra_range',
   },
   lights: [
     { id: 'light.soggiorno_tavolo', name: 'Soggiorno Tavolo' },
