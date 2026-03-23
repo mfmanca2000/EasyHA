@@ -142,7 +142,7 @@ export default function Dashboard() {
   const teslaPct = teslaState ? Math.max(0, Math.min(100, parseFloat(teslaState.state) || 0)) : 0;
 
   return (
-    <div className="h-screen bg-slate-900 text-white flex flex-col p-3 gap-3 overflow-hidden select-none">
+    <div className="min-h-screen bg-slate-900 text-white flex flex-col p-3 gap-3 overflow-y-auto select-none">
 
       {/* ── Header ── */}
       <div className="flex items-center justify-between flex-shrink-0">
@@ -230,12 +230,12 @@ export default function Dashboard() {
       </div>
 
       {/* ── Lights grid ── */}
-      <div className="flex-1 min-h-0 flex flex-col">
+      <div className="flex-shrink-0 flex flex-col">
         <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest mb-1.5 flex-shrink-0">
           💡 Lights
         </p>
         <div
-          className="grid gap-2 overflow-y-auto"
+          className="grid gap-2"
           style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(95px, 1fr))', gridAutoRows: '92px' }}
         >
           {ENTITIES.lights.map((light) => {
