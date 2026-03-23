@@ -29,7 +29,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 flex items-center justify-center px-4">
+    <div className="min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <h1 className="text-2xl font-bold text-white text-center mb-8">EasyHA</h1>
         <form onSubmit={handleSubmit} className="bg-slate-800 rounded-2xl p-6 shadow-xl space-y-4">

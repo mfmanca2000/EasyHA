@@ -133,7 +133,7 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="h-screen bg-slate-900 flex items-center justify-center">
+      <div className="h-screen flex items-center justify-center">
         <div className="text-white text-lg animate-pulse">Connecting to Home Assistant…</div>
       </div>
     );
@@ -145,7 +145,7 @@ export default function Dashboard() {
   const teslaRange = teslaRangeState ? `${teslaRangeState.state}${teslaRangeState.attributes?.unit_of_measurement ? ' ' + teslaRangeState.attributes.unit_of_measurement : ''}` : null;
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white flex flex-col p-3 gap-3 overflow-y-auto select-none">
+    <div className="min-h-screen text-white flex flex-col p-3 gap-3 overflow-y-auto select-none">
 
       {/* ── Header ── */}
       <div className="flex items-center justify-between flex-shrink-0">
