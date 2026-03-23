@@ -20,6 +20,7 @@ const ALL_ENTITY_IDS = [
   ...(ENTITIES.grid.importEnergy ? [ENTITIES.grid.importEnergy] : []),
   ...(ENTITIES.grid.exportEnergy ? [ENTITIES.grid.exportEnergy] : []),
   ENTITIES.battery.tesla,
+  ENTITIES.battery.teslaRange,
   ...ENTITIES.lights.map((l) => l.id),
 ];
 
