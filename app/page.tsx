@@ -139,16 +139,16 @@ export default function Dashboard() {
             <p className="text-xs font-semibold text-amber-400 uppercase tracking-widest mb-2">☀ Solar — Now</p>
             <div className="space-y-1.5">
               {ENTITIES.solar.panels.map((panel) => (
-                <div key={panel.id} className="flex justify-between items-center">
-                  <span className="text-sm text-slate-400">{panel.name}</span>
-                  <span className="text-sm font-mono font-semibold">
+                <div key={panel.id} className="flex justify-between items-center gap-2">
+                  <span className="text-sm text-slate-400 truncate min-w-0">{panel.name}</span>
+                  <span className="text-sm font-mono font-semibold whitespace-nowrap flex-shrink-0">
                     {fmtWithUnit(s(panel.id))}
                   </span>
                 </div>
               ))}
-              <div className="border-t border-slate-700 pt-1.5 flex justify-between items-center">
+              <div className="border-t border-slate-700 pt-1.5 flex justify-between items-center gap-2">
                 <span className="text-sm font-semibold text-amber-300">Total</span>
-                <span className="text-sm font-mono font-bold text-amber-300">
+                <span className="text-sm font-mono font-bold text-amber-300 whitespace-nowrap flex-shrink-0">
                   {fmtWithUnit(s(ENTITIES.solar.totalPower))}
                 </span>
               </div>
@@ -158,38 +158,37 @@ export default function Dashboard() {
           {/* Solar energy today */}
           <div className="bg-slate-800 rounded-2xl p-3 border border-green-500/25 flex-shrink-0">
             <p className="text-xs font-semibold text-green-400 uppercase tracking-widest mb-1">📅 Energy Today</p>
-            <p className="text-3xl font-bold text-green-300 leading-none">
-              {fmt(s(ENTITIES.solar.energyToday), 2)}
+            <p className="text-2xl font-bold text-green-300 leading-none whitespace-nowrap">
+              {fmtWithUnit(s(ENTITIES.solar.energyToday), 2)}
             </p>
-            <p className="text-xs text-slate-500 mt-0.5">{unit(s(ENTITIES.solar.energyToday))}</p>
           </div>
 
           {/* Grid power */}
           <div className="bg-slate-800 rounded-2xl p-3 border border-blue-500/25 flex-shrink-0">
             <p className="text-xs font-semibold text-blue-400 uppercase tracking-widest mb-2">🔌 Grid</p>
             <div className="space-y-1.5">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">↓ Import</span>
-                <span className="text-sm font-mono font-semibold text-red-400">
+              <div className="flex justify-between items-center gap-2">
+                <span className="text-sm text-slate-400 whitespace-nowrap">↓ Import</span>
+                <span className="text-sm font-mono font-semibold text-red-400 whitespace-nowrap flex-shrink-0">
                   {fmtWithUnit(s(ENTITIES.grid.importPower))}
                 </span>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">↑ Export</span>
-                <span className="text-sm font-mono font-semibold text-green-400">
+              <div className="flex justify-between items-center gap-2">
+                <span className="text-sm text-slate-400 whitespace-nowrap">↑ Export</span>
+                <span className="text-sm font-mono font-semibold text-green-400 whitespace-nowrap flex-shrink-0">
                   {fmtWithUnit(s(ENTITIES.grid.exportPower))}
                 </span>
               </div>
               {ENTITIES.grid.importEnergy && (
-                <div className="flex justify-between items-center border-t border-slate-700 pt-1.5">
-                  <span className="text-sm text-slate-400">↓ Energy In</span>
-                  <span className="text-sm font-mono">{fmtWithUnit(s(ENTITIES.grid.importEnergy))}</span>
+                <div className="flex justify-between items-center gap-2 border-t border-slate-700 pt-1.5">
+                  <span className="text-sm text-slate-400 whitespace-nowrap">↓ Energy In</span>
+                  <span className="text-sm font-mono whitespace-nowrap flex-shrink-0">{fmtWithUnit(s(ENTITIES.grid.importEnergy))}</span>
                 </div>
               )}
               {ENTITIES.grid.exportEnergy && (
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-slate-400">↑ Energy Out</span>
-                  <span className="text-sm font-mono">{fmtWithUnit(s(ENTITIES.grid.exportEnergy))}</span>
+                <div className="flex justify-between items-center gap-2">
+                  <span className="text-sm text-slate-400 whitespace-nowrap">↑ Energy Out</span>
+                  <span className="text-sm font-mono whitespace-nowrap flex-shrink-0">{fmtWithUnit(s(ENTITIES.grid.exportEnergy))}</span>
                 </div>
               )}
             </div>
