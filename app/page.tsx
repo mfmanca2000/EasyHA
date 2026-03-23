@@ -221,8 +221,8 @@ export default function Dashboard() {
           💡 Lights
         </p>
         <div
-          className="flex-1 grid gap-2"
-          style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(82px, 1fr))', gridAutoRows: '1fr' }}
+          className="grid gap-2"
+          style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(82px, 1fr))', gridAutoRows: '80px' }}
         >
           {ENTITIES.lights.map((light) => {
             const ls = s(light.id);
