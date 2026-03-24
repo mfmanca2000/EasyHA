@@ -378,9 +378,15 @@ export default function Dashboard() {
                   <span className={`text-[9px] font-bold uppercase tracking-widest ${acc.dim}`}>
                     {teslaRange ?? batteryStatus(teslaPct)}
                   </span>
-                  <div className="flex gap-3">
-                    {['25%', '50%', '75%'].map((t) => (
-                      <span key={t} className="text-[8px] text-slate-600 font-mono">{t}</span>
+                  <div className="relative flex-1 ml-2 h-3">
+                    {[25, 50, 75].map((pos) => (
+                      <span
+                        key={pos}
+                        className="absolute text-[8px] text-slate-600 font-mono -translate-x-1/2"
+                        style={{ left: `${pos}%` }}
+                      >
+                        {pos}%
+                      </span>
                     ))}
                   </div>
                 </div>
