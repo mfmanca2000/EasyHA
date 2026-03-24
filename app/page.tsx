@@ -70,9 +70,9 @@ function batteryStatus(pct: number): string {
 
 // Panel-specific accent colours
 const PANEL_STYLES = [
-  { border: 'border-amber-500/30', label: 'text-amber-400', value: 'text-amber-200', bg: 'bg-amber-500/8', glow: '' },
-  { border: 'border-orange-500/30', label: 'text-orange-400', value: 'text-orange-200', bg: 'bg-orange-500/8', glow: '' },
-  { border: 'border-yellow-500/30', label: 'text-yellow-400', value: 'text-yellow-200', bg: 'bg-yellow-500/8', glow: '' },
+  { border: 'border-amber-500/30', label: 'text-amber-400', value: 'text-amber-200', bg: 'bg-amber-500/20', glow: '' },
+  { border: 'border-orange-500/30', label: 'text-orange-400', value: 'text-orange-200', bg: 'bg-orange-500/20', glow: '' },
+  { border: 'border-yellow-500/30', label: 'text-yellow-400', value: 'text-yellow-200', bg: 'bg-yellow-500/20', glow: '' },
 ];
 
 export default function Dashboard() {
@@ -191,7 +191,7 @@ export default function Dashboard() {
       {/* ── Row 2: Grid ── */}
       <div className="flex-shrink-0 grid grid-cols-3 gap-2">
         {/* Import Power */}
-        <div className="bg-red-500/8 rounded-xl p-2.5 border border-red-500/25">
+        <div className="bg-red-500/20 rounded-xl p-2.5 border border-red-500/25">
           <p className="text-[10px] font-semibold uppercase tracking-widest mb-1.5 text-red-400">↓ Import</p>
           <p className="text-lg font-bold font-mono leading-none text-red-200">
             {fmtWithUnit(s(ENTITIES.grid.importPower))}
@@ -205,7 +205,7 @@ export default function Dashboard() {
         </div>
 
         {/* Export Power */}
-        <div className="bg-green-500/8 rounded-xl p-2.5 border border-green-500/25">
+        <div className="bg-green-500/20 rounded-xl p-2.5 border border-green-500/25">
           <p className="text-[10px] font-semibold uppercase tracking-widest mb-1.5 text-green-400">↑ Export</p>
           <p className="text-lg font-bold font-mono leading-none text-green-200">
             {fmtWithUnit(s(ENTITIES.grid.exportPower))}
@@ -220,7 +220,7 @@ export default function Dashboard() {
 
         {/* Energy In today */}
         {ENTITIES.grid.importEnergy ? (
-          <div className="bg-blue-500/8 rounded-xl p-2.5 border border-blue-500/25">
+          <div className="bg-blue-500/20 rounded-xl p-2.5 border border-blue-500/25">
             <p className="text-[10px] font-semibold uppercase tracking-widest mb-1.5 text-blue-400">↓ Energy In</p>
             <p className="text-lg font-bold font-mono leading-none text-blue-200">
               {fmtWithUnit(s(ENTITIES.grid.importEnergy), 2)}
@@ -255,7 +255,7 @@ export default function Dashboard() {
                   }`}
                 style={{
                   background: isOn
-                    ? 'radial-gradient(ellipse at 50% -10%, rgba(253,224,71,0.28) 0%, rgba(234,179,8,0.10) 50%, rgba(15,23,42,0.97) 100%)'
+                    ? 'radial-gradient(ellipse at 50% 0%, rgba(253,224,71,0.45) 0%, rgba(30,24,5,0.97) 60%, rgba(20,16,5,1) 100%)'
                     : 'linear-gradient(160deg, rgba(30,41,59,0.95) 0%, rgba(15,23,42,1) 100%)',
                 }}
               >
