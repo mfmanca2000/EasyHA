@@ -373,22 +373,11 @@ export default function Dashboard() {
                   <div className="w-1.5 h-3.5 rounded-r-sm flex-shrink-0 border border-slate-600/50 bg-slate-700/60 -ml-px" />
                 </div>
 
-                {/* Status + cell labels */}
-                <div className="flex items-center justify-between px-0.5">
+                {/* Status label */}
+                <div className="flex items-center px-0.5">
                   <span className={`text-[9px] font-bold uppercase tracking-widest ${acc.dim}`}>
                     {teslaRange ?? batteryStatus(teslaPct)}
                   </span>
-                  <div className="relative flex-1 ml-2 h-3">
-                    {[25, 50, 75].map((pos) => (
-                      <span
-                        key={pos}
-                        className="absolute text-[8px] text-slate-600 font-mono -translate-x-1/2"
-                        style={{ left: `${pos}%` }}
-                      >
-                        {pos}%
-                      </span>
-                    ))}
-                  </div>
                 </div>
               </div>
 
